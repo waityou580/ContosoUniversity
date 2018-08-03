@@ -85,9 +85,9 @@ namespace ContosoUniversity
         {
 
             //adding custom roles
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var RoleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
             //serviceProvider.GetService<RoleManager<IdentityRole>>();
-            var UserManager = serviceProvider.GetRequiredService<UserManager<ContosoUniversityUser>>();
+            var UserManager = serviceProvider.GetService<UserManager<ContosoUniversityUser>>();
             string[] roleNames = { "Admin", "Manager", "Member" };
             IdentityResult roleResult;
             foreach (var roleName in roleNames)

@@ -18,6 +18,7 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ContosoUniversityUser> _signInManager;
         private readonly UserManager<ContosoUniversityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -25,12 +26,14 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
             UserManager<ContosoUniversityUser> userManager,
             SignInManager<ContosoUniversityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -99,10 +102,9 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    
-                    if (!await _userManager.IsInRoleAsync(user, "Admin"))
+                    if (await _roleManager.RoleExistsAsync("Admin"))
                     {
-                        await _userManager.AddToRoleAsync(user, "Admin");
+                         _userManager.AddToRoleAsync(user, "Admin").Wait();
                     }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
