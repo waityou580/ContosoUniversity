@@ -22,6 +22,7 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+
         public RegisterModel(
             UserManager<ContosoUniversityUser> userManager,
             SignInManager<ContosoUniversityUser> signInManager,
@@ -102,10 +103,10 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (await _roleManager.RoleExistsAsync("Admin"))
-                    {
-                         _userManager.AddToRoleAsync(user, "Admin").Wait();
-                    }
+                   // if (await _roleManager.RoleExistsAsync("Admin"))
+                   // {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    //}
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);

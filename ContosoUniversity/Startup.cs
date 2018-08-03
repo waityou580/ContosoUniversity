@@ -79,6 +79,7 @@ namespace ContosoUniversity
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
+
             CreateRoles(serviceProvider).Wait();
         }
         public async Task CreateRoles(IServiceProvider serviceProvider)
@@ -112,7 +113,7 @@ namespace ContosoUniversity
                 var createPowerUser = await UserManager.CreateAsync(poweruser, UserPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    await UserManager.AddToRoleAsync(_user, "Member");
+                    await UserManager.AddToRoleAsync(poweruser, "Admin");
                 }
             }
         }

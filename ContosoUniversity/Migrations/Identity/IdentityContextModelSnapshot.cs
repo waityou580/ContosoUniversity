@@ -29,8 +29,6 @@ namespace ContosoUniversity.Migrations.Identity
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
-                    b.Property<DateTime>("DOB");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -39,8 +37,6 @@ namespace ContosoUniversity.Migrations.Identity
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
