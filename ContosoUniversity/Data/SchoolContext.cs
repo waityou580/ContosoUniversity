@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Models
 {
-    public class SchoolContext : DbContext
+    public class SchoolContext : IdentityDbContext<ApplicationUser>
     {
         public SchoolContext (DbContextOptions<SchoolContext> options)
             : base(options)
@@ -24,6 +25,9 @@ namespace ContosoUniversity.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //The entity type 'IdentityUserLogin<string>' requires a primary key to be defined. Add Below code
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Course>().ToTable("Course");
             modelBuilder.Entity<Enrollment>().ToTable("Enrollment");
             modelBuilder.Entity<Student>().ToTable("Student");

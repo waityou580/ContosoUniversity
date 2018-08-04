@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Pages.Students
 {
-
+    [Authorize(Roles ="Admin")]
     public class IndexModel : PageModel
     {
         private readonly ContosoUniversity.Models.SchoolContext _context;

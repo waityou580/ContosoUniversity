@@ -12,8 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Identity;
-using ContosoUniversity.Areas.Identity.Data;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using ContosoUniversity.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace ContosoUniversity
 {
@@ -41,29 +43,42 @@ namespace ContosoUniversity
             services.AddDbContext<SchoolContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SchoolContext")));
 
-            services.AddDbContext<IdentityContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("IdentityContext")));
-
-            //services.AddIdentity<ContosoUniversityUser, IdentityRole>()
-            //        .AddEntityFrameworkStores<IdentityContext>()
-            //        .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<SchoolContext>()
+                    .AddDefaultTokenProviders();
+            // using Microsoft.AspNetCore.Identity.UI.Services;
+            services.AddSingleton<IEmailSender, EmailSender>();
+            //Config Identity redirect parameter
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.Cookie.Name = "YourAppCookieName";
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.LoginPath = "/Identity/Account/Login";
+                // ReturnUrlParameter requires `using Microsoft.AspNetCore.Authentication.Cookies;`
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                options.SlidingExpiration = true;
+            });
 
             // Add Identity Core services to the services container.
-            var builder = services.AddIdentityCore<ContosoUniversityUser>(opt =>
-            {
-                // Configure Password Options
-                opt.Password.RequireDigit = true;
-            }
-            );
-            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
-            builder.AddRoleValidator<RoleValidator<IdentityRole>>();
-            builder.AddRoleManager<RoleManager<IdentityRole>>();
-            builder.AddSignInManager<SignInManager<ContosoUniversityUser>>();
-            builder.AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
+            //var builder = services.AddIdentityCore<ContosoUniversityUser>(opt =>
+            //{
+            //    // Configure Password Options
+            //    opt.Password.RequireDigit = true;
+            //}
+            //);
+            //builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+            //builder.AddRoleValidator<RoleValidator<IdentityRole>>();
+            //builder.AddRoleManager<RoleManager<IdentityRole>>();
+            //builder.AddSignInManager<SignInManager<ContosoUniversityUser>>();
+            //builder.AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
 
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+            //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
@@ -75,9 +90,10 @@ namespace ContosoUniversity
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseAuthentication();
+
             app.UseMvc();
 
             CreateRoles(serviceProvider).Wait();
@@ -88,7 +104,7 @@ namespace ContosoUniversity
             //adding custom roles
             var RoleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
             //serviceProvider.GetService<RoleManager<IdentityRole>>();
-            var UserManager = serviceProvider.GetService<UserManager<ContosoUniversityUser>>();
+            var UserManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
             string[] roleNames = { "Admin", "Manager", "Member" };
             IdentityResult roleResult;
             foreach (var roleName in roleNames)
@@ -99,7 +115,7 @@ namespace ContosoUniversity
                     roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
-            var poweruser = new ContosoUniversityUser
+            var poweruser = new ApplicationUser
             {
                 UserName = Configuration.GetSection("UserSettings")["UserEmail"],
                 Email = Configuration.GetSection("UserSettings")["UserEmail"]

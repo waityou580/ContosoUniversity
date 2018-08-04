@@ -1,5 +1,4 @@
 ﻿using System;
-using ContosoUniversity.Areas.Identity.Data;
 using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -16,12 +15,6 @@ namespace ContosoUniversity.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
-                services.AddDbContext<IdentityContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("IdentityContextConnection")));
-
-                services.AddDefaultIdentity<ContosoUniversityUser>()
-                    .AddEntityFrameworkStores<IdentityContext>();
             });
         }
     }

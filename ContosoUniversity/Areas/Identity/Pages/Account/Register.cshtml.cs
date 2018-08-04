@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using ContosoUniversity.Areas.Identity.Data;
+using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,25 +16,21 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<ContosoUniversityUser> _signInManager;
-        private readonly UserManager<ContosoUniversityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
-
         public RegisterModel(
-            UserManager<ContosoUniversityUser> userManager,
-            SignInManager<ContosoUniversityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -44,16 +40,6 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "Full name")]
-            public string Name { get; set; }
-
-            [Required]
-            [Display(Name = "Birth Date")]
-            [DataType(DataType.Date)]
-            public DateTime DOB { get; set; }
-
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -81,13 +67,7 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new ContosoUniversityUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    Name = Input.Name,
-                    DOB = Input.DOB
-                };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
@@ -103,10 +83,7 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                   // if (await _roleManager.RoleExistsAsync("Admin"))
-                   // {
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                    //}
+                    await _userManager.AddToRoleAsync(user, "Member");
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);

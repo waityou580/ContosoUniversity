@@ -249,6 +249,41 @@ namespace ContosoUniversity.Data
             }
             context.SaveChanges();
         }
+        //public static void CreateRoles(IServiceProvider serviceProvider)
+        //{
+
+        //    //adding custom roles
+        //    var RoleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+        //    //serviceProvider.GetService<RoleManager<IdentityRole>>();
+        //    var UserManager = serviceProvider.GetService<UserManager<ContosoUniversityUser>>();
+        //    string[] roleNames = { "Admin", "Manager", "Member" };
+        //    IdentityResult roleResult;
+        //    foreach (var roleName in roleNames)
+        //    {
+        //        var roleExist = await RoleManager.RoleExistsAsync(roleName);
+        //        if (!roleExist)
+        //        {
+        //            roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+        //        }
+        //    }
+        //    var poweruser = new ContosoUniversityUser
+        //    {
+        //        UserName = Configuration.GetSection("UserSettings")["UserEmail"],
+        //        Email = Configuration.GetSection("UserSettings")["UserEmail"]
+        //    };
+
+        //    string UserPassword = Configuration.GetSection("UserSettings")["UserPassword"];
+        //    var _user = await UserManager.FindByEmailAsync(Configuration.GetSection("UserSettings")["UserEmail"]);
+
+        //    if (_user == null)
+        //    {
+        //        var createPowerUser = await UserManager.CreateAsync(poweruser, UserPassword);
+        //        if (createPowerUser.Succeeded)
+        //        {
+        //            await UserManager.AddToRoleAsync(_user, "Admin");
+        //        }
+        //    }
+        //}
     }
 
 }

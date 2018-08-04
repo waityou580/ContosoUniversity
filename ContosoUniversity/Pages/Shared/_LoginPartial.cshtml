@@ -1,10 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using ContosoUniversity.Areas.Identity.Data
-@inject SignInManager<ContosoUniversityUser> SignInManager
-@inject UserManager<ContosoUniversityUser> UserManager
-
-@*@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager*@
+@using ContosoUniversity.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {

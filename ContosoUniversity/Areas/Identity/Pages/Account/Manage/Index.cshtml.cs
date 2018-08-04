@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using ContosoUniversity.Areas.Identity.Data;
+using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +14,13 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<ContosoUniversityUser> _userManager;
-        private readonly SignInManager<ContosoUniversityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public IndexModel(
-            UserManager<ContosoUniversityUser> userManager,
-            SignInManager<ContosoUniversityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -40,14 +40,6 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name="Fullname")]
-            public string Name { get; set; }
-            [Required]
-            [Display(Name="Birth Date")]
-            [DataType(DataType.Date)]
-            public DateTime DOB { get; set; }
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -73,8 +65,6 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                Name = user.Name,
-                DOB = user.DOB,
                 Email = email,
                 PhoneNumber = phoneNumber
             };
@@ -95,16 +85,6 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account.Manage
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if(Input.Name != user.Name)
-            {
-                user.Name = Input.Name;
-            }
-
-            if(Input.DOB != user.DOB)
-            {
-                user.DOB = Input.DOB;
             }
 
             var email = await _userManager.GetEmailAsync(user);
@@ -128,7 +108,6 @@ namespace ContosoUniversity.Areas.Identity.Pages.Account.Manage
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
                 }
             }
-            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

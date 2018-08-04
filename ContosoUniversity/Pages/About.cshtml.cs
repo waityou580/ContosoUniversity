@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Pages
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class AboutModel : PageModel
     {
         private readonly SchoolContext _context;
